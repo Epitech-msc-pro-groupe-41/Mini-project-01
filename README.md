@@ -1,1 +1,5 @@
-# Mini-project-01
+# README
+
+sudo apt install ruby
+bundle install
+rails server
