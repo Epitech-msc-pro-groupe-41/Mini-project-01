@@ -26,10 +26,10 @@ public class ClockController {
 
     @ApiOperation(value = "Get clocks by userID")
     @RequestMapping(method = RequestMethod.GET, value = "/{userID}")
-    public List<ClockResponseDto> getClock(
+    public ClockResponseDto getClock(
         @PathVariable(name = "userID", required = true) String userID) {
 
-        return clockService.getClock(userID);
+        return clockService.getClock(userID, true);
     }
 
     @ApiOperation(value = "Create a new clock")

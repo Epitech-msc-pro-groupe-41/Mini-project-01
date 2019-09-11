@@ -5,7 +5,6 @@ import java.util.List;
 import com.timemanager.core.src.dto.CreateWorkingTimeRequestDto;
 import com.timemanager.core.src.dto.UpdateWorkingTimeRequestDto;
 import com.timemanager.core.src.dto.WorkingTimeResponseDto;
-import com.timemanager.core.src.model.WorkingTime;
 import com.timemanager.core.src.service.WorkingTimeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class WorkingTimeController {
     WorkingTimeService workingTimeService;
     
     @ApiOperation(value = "Get all working time of a user filter by start and end time" )
-    @RequestMapping(method = RequestMethod.GET, value = "/{userID}")
+    @RequestMapping(method = RequestMethod.GET, value = "filter/{userID}")
     public List<WorkingTimeResponseDto> getWorkingTimes(
         @PathVariable(name = "userID", required = true) String userID,
         @RequestParam(name = "start", required = true) String start,
@@ -37,6 +36,14 @@ public class WorkingTimeController {
         
         return workingTimeService.getWorkingTimes(userID, start, end);
     }
+
+    @ApiOperation(value = "Get all working time by userID" )
+    @RequestMapping(method = RequestMethod.GET, value = "/{userID}")
+    public List<WorkingTimeResponseDto> getAllWorkingTimes(
+        @PathVariable(name = "userID", required = true) String userID) {        
+        return workingTimeService.getAllWorkingTimes(userID);
+    }
+
 
     @ApiOperation(value = "Get working time by userID and workingtimeID")
     @RequestMapping(method = RequestMethod.GET, value = "/{userID}/{workingtimeID}")

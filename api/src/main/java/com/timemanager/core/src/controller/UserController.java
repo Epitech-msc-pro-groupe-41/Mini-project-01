@@ -2,8 +2,6 @@ package com.timemanager.core.src.controller;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import com.timemanager.core.src.dto.GetUserResponseDto;
 import com.timemanager.core.src.dto.UserRequestDto;
 import com.timemanager.core.src.model.User;
@@ -46,10 +44,17 @@ public class UserController {
         return userService.getUserById(userID);
     }
 
+    @ApiOperation(value = "Get all user with them informations")
+    @RequestMapping(method = RequestMethod.GET, value = "/all")
+    public List<User> getAllUsers() {
+
+        return userService.getAllUsers();
+    }
+
     @ApiOperation(value = "Create a new user")
     @RequestMapping(method = RequestMethod.POST)
-    public void createUser(@RequestBody UserRequestDto user ) {
-        userService.createUser(user);
+    public GetUserResponseDto createUser(@RequestBody UserRequestDto user ) {
+        return userService.createUser(user);
     }
 
     @ApiOperation(value = "Update user")

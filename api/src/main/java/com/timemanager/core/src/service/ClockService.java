@@ -32,51 +32,72 @@ public class ClockService {
         return formatter.format(date);
     }
 
-    public List<ClockResponseDto> getClock(String userID) {
+    public ClockResponseDto getClock(String userID, boolean trigger) {
         List<Clock> clocks= null;
-        List<ClockResponseDto> response= new ArrayList<>();
-
+        ClockResponseDto res = null;
         if (userID.isEmpty()) {
             throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN, "Invalid parameters");     
         } else {
             if (userService.getUserById(userID) != null) {
                 Query query = new Query();
-                query.addCriteria(Criteria.where("userId").is(userID));            
+                query.addCriteria(Criteria.where("userId").is(userID).and("status").is(true));            
                 clocks = clockRepository.find(query);
-                
             }
             if (clocks == null) {
-                throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "No clock found");       
+                return null;    
             } 
-            for (Clock clock : clocks) {
-                ClockResponseDto res = new ClockResponseDto();
+            Clock clock = null;
+            long compareDate = 0;
+            for (Clock c : clocks) {
+                if (c.getTime() > compareDate) {
+                    clock = c;
+                }
+            }
+
+            if (clock != null) {
+                res = new ClockResponseDto();
                 res.setClockID(clock.getClockID());
                 res.setStatus(clock.isStatus());
                 res.setTime(dateLongToString(clock.getTime()));
                 res.setUserId(clock.getUserId());
-                response.add(res);
+    
             }
         }
-        return response;
+
+        if (res == null && trigger) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "No work period is in progress");     
+        }
+        return res;
     }
 
     public Clock createClock(String userID) {
-        Clock clock = null;
+        Clock response = null;
+
         if (userID.isEmpty()) {
             throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN, "Invalid parameters");     
         } else {
             if (userService.getUserById(userID) != null) {
-                clock =  new Clock();
-                clock.setClockID("CLK" + UUID.randomUUID().toString());
-                clock.setStatus(true);
-                clock.setTime(System.currentTimeMillis());
-                clock.setUserId(userID);
-                clockRepository.create(clock);
+                ClockResponseDto clock = getClock(userID, false);
+                if (clock == null) {
+                    response =  new Clock();
+                    response.setClockID("CLK" + UUID.randomUUID().toString());
+                    response.setStatus(true);
+                    response.setTime(System.currentTimeMillis());
+                    response.setUserId(userID);    
+                } else {
+                    Query query = new Query();
+                    query.addCriteria(Criteria.where("clockID").is(clock.getClockID()).and("userId").is(clock.getUserId()));            
+                    List<Clock> existClock = clockRepository.find(query);   
+                    if (existClock != null && existClock.size() > 0) 
+                        response = existClock.get(0);
+                    response.setStatus(false);
+                }
+                clockRepository.create(response);
             }
         }
-        return clock;
+        return response;
     }
 }

@@ -5,17 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.timemanager.core.src.dto.CreateWorkingTimeRequestDto;
-import com.timemanager.core.src.dto.GetUserResponseDto;
 import com.timemanager.core.src.dto.UpdateWorkingTimeRequestDto;
-import com.timemanager.core.src.dto.UserRequestDto;
 import com.timemanager.core.src.dto.WorkingTimeResponseDto;
-import com.timemanager.core.src.model.User;
 import com.timemanager.core.src.model.WorkingTime;
-import com.timemanager.core.src.repository.UserRepository;
 import com.timemanager.core.src.repository.WorkingTimeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +53,37 @@ public class WorkingTimeService {
         workingTime.setWorkingTimeID("WT" + UUID.randomUUID().toString());
         workingTimeRepository.create(workingTime);
     }
+
+    public List<WorkingTimeResponseDto> getAllWorkingTimes(String userID) {
+        List<WorkingTime> workingTimes = null;
+        List<WorkingTimeResponseDto> response = new ArrayList<>();
+
+        if (userID.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "Invalid parameters");  
+        } else {
+
+            Query query = new Query();
+            query.addCriteria(new Criteria().andOperator(Criteria.where("userId").is(userID)));
+            workingTimes = workingTimeRepository.find(query);
+            if (workingTimes != null) {
+                for (WorkingTime workingTime : workingTimes) {
+                    WorkingTimeResponseDto data = new WorkingTimeResponseDto();
+                    data.setEnd(dateLongToString(workingTime.getEnd()));
+                    data.setStart(dateLongToString(workingTime.getStart()));
+                    data.setUserId(workingTime.getUserId());
+                    data.setWorkingTimeID(workingTime.getWorkingTimeID());
+                    response.add(data);
+                }
+            } else {
+                throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "No working time found"); 
+            }
+        }
+
+        return response;
+    }
+
 
     public List<WorkingTimeResponseDto> getWorkingTimes(String userID, String start, String end){
         List<WorkingTime> workingTimes = null;

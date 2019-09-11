@@ -1,5 +1,6 @@
 package com.timemanager.core.src.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -27,7 +28,9 @@ public class UserService {
         Pattern.compile("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$",
             Pattern.CASE_INSENSITIVE);
 
-    public void createUser(UserRequestDto in) {
+    public GetUserResponseDto createUser(UserRequestDto in) {
+        GetUserResponseDto response = new GetUserResponseDto();
+        String userID = "";
         Matcher matcher = pattern.matcher(in.getEmail());
 
         if (!matcher.matches() || in.getUsername() == null || in.getUsername().isEmpty()) {
@@ -35,11 +38,18 @@ public class UserService {
                 HttpStatus.FORBIDDEN, "Incorrect value for mail");     
         } else {
             User user = new User();
-            user.setUserID("USR" + UUID.randomUUID().toString());
+            userID = "USR" + UUID.randomUUID().toString();
+            user.setUserID(userID);
             user.setEmail(in.getEmail().toLowerCase());
             user.setUsername(in.getUsername());
             userRepository.create(user);
         }
+        response.setUserID(userID);
+        return response;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public GetUserResponseDto getUsers(String email, String userName){
