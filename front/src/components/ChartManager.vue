@@ -1,59 +1,69 @@
 <template>
-  <div>
-    <b-card id="card-margin">
-      <h2>Chart Manager</h2>
-      <donut-chart
-        id="donut"
-        :data="donutData"
-        colors="[ #FF6384, #36A2EB, #FFCE56 ]"
-        resize="true"
-      ></donut-chart>
-      <br>
-      <bar-chart
-        id="bar"
-        data='[
-        { "years": "2013", "and": 10, "ios": 5, "win": 2},
-        { "years": "2014", "and": 10, "ios": 15, "win": 3},
-        { "years": "2015", "and": 20, "ios": 25, "win": 1}
-      ]'
-        xkey="year"
-        ykeys='["and", "ios", "win"]'
-        bar-colors='["#FF6384", "#36A2EB", "#FFCE56"]'
-        grid=true
-        grid-text-weight="bold"
-        resize="true"
-      ></bar-chart>
-    </b-card>
-  </div>
+    <div>
+        <h4>Chart Manager</h4>
+        <select v-model="chart" id="myselect" aria-label="">
+            <option value="0">BarChart</option>
+            <option value="1">LineChart</option>
+            <option value="2">AreaChart</option>
+        </select>
+        <div v-if="graph && graph.length > 0">
+            <div v-if="chart == 0">
+                <bar-chart id="bar" :data="graph" xkey="date" ykeys='[ "hours"]'
+                           bar-colors='[ "#FF6384", "#36A2EB", "#FFCE56" ]' grid="true" grid-text-weight="bold"
+                           resize="true">
+                </bar-chart>
+            </div>
+            <div v-else-if="chart == 1">
+                <line-chart id="line" :data="graph" xkey="date" ykeys='[ "hours"]'
+                            bar-colors='[ "#FF6384", "#36A2EB", "#FFCE56" ]' grid="true" grid-text-weight="bold" resize="true">
+                </line-chart>        </div>
+            <div v-else-if="chart == 2">
+                <area-chart id="area" :data="graph" xkey="date" ykeys='[ "hours"]'
+                            bar-colors='[ "#FF6384", "#36A2EB", "#FFCE56" ]' grid="true" grid-text-weight="bold" resize="true">
+                </area-chart>
+            </div>
+        </div>
+        <button v-on:click="refresh()">Refresh</button>
+    </div>
 </template>
 
 <script>
-import Raphael from "raphael/raphael";
-global.Raphael = Raphael;
-import { DonutChart, BarChart, LineChart, AreaChart } from "vue-morris";
-export default {
-  name: "ChartManager",
-  components: {
-    DonutChart,
-    BarChart,
-    LineChart,
-    AreaChart
-  },
-  data() {
-    return {
-      donutData: [
-        { label: "Red", value: 300 },
-        { label: "Blue", value: 50 },
-        { label: "Yellow", value: 100 }
-      ]
-    };
-  },
-  methods: {}
-};
+    import axios from 'axios';
+
+    import Raphael from 'raphael/raphael'
+
+    global.Raphael = Raphael;
+
+    import {BarChart, LineChart, AreaChart} from 'vue-morris'
+
+    export default {
+        name: 'ChartManager',
+        data: function () {
+            return {
+                chart: 0,
+                graph: [],
+                refresh: function () {
+                    axios.get('http://localhost:4000/api/chartManager/' + this.$route.params.id)
+                        .then(response => {
+                            if (response && response.data && response.data.charData) {
+                                this.graph = response.data.charData;
+                            }
+                            console.log("refresh: ", response);
+                        }).catch(error => {
+                        alert("Chart don't respond.");
+                        console.log('error: ', error);
+                    });
+                }
+            }
+        },
+        components: {
+            BarChart, LineChart, AreaChart
+        }
+    }
+
 </script>
 
-<style>
-#card-margin {
-  margin-top: 1rem;
-}
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+
 </style>

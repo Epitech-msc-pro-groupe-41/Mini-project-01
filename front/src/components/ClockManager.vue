@@ -1,64 +1,57 @@
 <template>
   <div>
-    <b-card id="card-margin">
-      <b-row>
-        <b-col cols="10">
-          <h2 id="user-title">Clock Manager</h2>
-        </b-col>
-        <b-col cols="2" class="text-right">
-          <b-button variant="outline-primary">
-            <i class="fas fa-plus"></i> Refresh
-          </b-button>
-        </b-col>
-      </b-row>
+    <h4>Clock Manager</h4>
 
-      <b-row v-if="startDateTime !== null">
-        <b-col class="text-center" cols="12">
-          <h3>Work started since {{startDateTime}}</h3>
-          <b-button variant="outline-primary">Click here to inactive</b-button>
-        </b-col>
-      </b-row>
-      <b-row v-else>
-        <b-col class="text-center" cols="12">
-          <h3>No work is in progress</h3>
-          <b-button variant="outline-primary">Click here to active</b-button>
-        </b-col>
-      </b-row>
-    </b-card>
+    <p>Clock Value: {{clockValue}}</p>
+    <p>Clock in: {{clockIn}}</p>
+    <button v-on:click="refresh()">Refresh</button>
+    <div></div>
+    <button style="margin-top: 10px" v-on:click="clock()">Clock</button>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'ClockManager',
-  data () {
-    return {
-      startDateTime: null,
-      clockIn: false
+  import axios from 'axios';
+
+  export default {
+    name: 'ClockManager',
+    data: function () {
+      return {
+        clockValue: 0,
+        clockIn: false,
+        refresh: function () {
+          axios.get('http://localhost:4000/api/clocks/' + this.$route.params.id)
+                  .then(response => {
+                    console.log("refresh: ", response);
+                    if (response && response.data) {
+                      this.clockValue = response.data.time;
+                      this.clockIn = response.data.status
+                    }
+                  }).catch(error => {
+            alert('Clock is not active.');
+            console.log('error: ', error);
+          });
+        },
+        clock: function () {
+          axios.post('http://localhost:4000/api/clocks/' + this.$route.params.id, {
+            status: !this.clockIn
+          })
+                  .then(response => {
+                    console.log("refresh: ", response);
+                    if (response && response.data) {
+                      this.clockIn = response.data.status
+                    }
+                  }).catch(error => {
+            alert('Bad Request');
+            console.log('error: ', error);
+          });
+        }
+      }
     }
-  },
-  methods: {
-    refresh () {},
-    clock () {}
   }
-}
 </script>
 
-<style>
-#card-margin {
-  margin-top: 1rem;
-}
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
 
-#row-margin {
-  margin-top: 1rem;
-}
-
-#col-margin {
-  margin-top: 1rem;
-}
-
-#error_msg {
-  margin-left: 1rem;
-  color: red;
-}
 </style>
