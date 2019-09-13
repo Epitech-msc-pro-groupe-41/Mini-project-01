@@ -1,0 +1,23 @@
+<div style="width: 80%; margin: auto;">
+
+  <h2 style="margin-top: 70px; text-align: center">Channels</h2>
+
+  <div *ngFor="let channel of channels; let index = index" role="listitem"
+       fxLayout="row" fxLayoutAlign="space-between">
+    <p>{{channel.name}}</p>
+    <div>
+      <button mat-icon-button color="primary" (click)="enterChannel(channel)">
+        <mat-icon>arrow_right_alt</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="editChannel(channel)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteChannel(channel)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <button mat-stroked-button style="margin-top: 10px; width: 100%" color="primary" (click)="createChannel()" >New Channel</button>
+
+</div>

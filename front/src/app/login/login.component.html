@@ -1,0 +1,10 @@
+<h2 style="text-align: center"> Login </h2>
+<form fxLayout="column" fxLayoutAlign="center" class="login-form" (ngSubmit)="onSubmit()">
+
+    <mat-form-field >
+      <input matInput placeholder="username" name="username" [(ngModel)]="username">
+    </mat-form-field>
+
+  <button mat-raised-button type="submit" style="margin-top: 10px" color="primary">Login</button>
+
+</form>

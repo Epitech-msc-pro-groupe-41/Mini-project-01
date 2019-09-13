@@ -1,0 +1,45 @@
+<div style="width: 80%; margin: auto;" *ngIf="userService.user && channel">
+  <div style="margin-top: 70px;" fxLayout="row" fxLayoutAlign="space-between">
+    <h2>Channel {{ channel.name }}</h2>
+
+    <button mat-stroked-button color="warn" (click)="leaveChannel()">
+      Leave Channel
+    </button>
+  </div>
+
+  <div fxLayout="column" fxLayoutAlign="center">
+
+    <div *ngFor="let message of channel.messages">
+
+      <mat-card style="float: right; background-color: #1379a4" *ngIf="message.username === userService.user.name" class="message-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{message.username}}</mat-card-title>
+        </mat-card-header>
+        <p>{{message.message}}</p>
+        <mat-card-content>
+
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card style="float: left" *ngIf="message.username !== userService.user.name" class="message-card">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{message.username}}</mat-card-title>
+        </mat-card-header>
+        <p>{{message.message}}</p>
+        <mat-card-content>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <form (ngSubmit)="sendMessage()">
+      <mat-form-field style="width: 100%">
+        <input matInput placeholder="message" name="message" [(ngModel)]="message">
+      </mat-form-field>
+    </form>
+  </div>
+
+</div>

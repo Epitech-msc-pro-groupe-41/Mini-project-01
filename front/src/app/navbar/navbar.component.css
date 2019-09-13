@@ -1,0 +1,9 @@
+.main-navbar {
+  background-color: #1379a4;
+  top: 0;
+  left: 0;
+  height: 60px;
+  position: fixed;
+  z-index: 3;
+  width: 100%;
+}
