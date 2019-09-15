@@ -34,15 +34,15 @@ public class MongoDBConfig {
 
     @Bean
     public MongoClient mongoClient() throws Exception {
-        ServerAddress serverAddress = new ServerAddress(InetAddress.getByName(dbHost), dbPort);
-        MongoCredential credential = MongoCredential.createScramSha1Credential(
+        ServerAddress serverAddress = new ServerAddress(dbHost, dbPort);
+        /*MongoCredential credential = MongoCredential.createScramSha1Credential(
                 dbUser,
                 dbName,
-                dbPassword.toCharArray());
+                dbPassword.toCharArray());*/
 
         MongoClientOptions mongoClientOptions = MongoClientOptions.builder().connectTimeout(30000).build();
 
-        MongoClient mongoClient = new MongoClient(serverAddress, credential, mongoClientOptions);
+        MongoClient mongoClient = new MongoClient(serverAddress, mongoClientOptions);
         return mongoClient;
     }
 

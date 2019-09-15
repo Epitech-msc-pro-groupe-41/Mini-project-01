@@ -1,9 +1,42 @@
-version: "3"
+version: '3'
+
 services:
-  mongo:
-    image: "mongo"
-    environment:
-    - "MONGO_INITDB_ROOT_USERNAME=root"
-    - "MONGO_INITDB_ROOT_PASSWORD=example"
+  api:
+    build: ./api
+    image: api
+    restart: always
     ports:
-    - "27017:27017"
+      - "4000:4000"
+    depends_on:
+      - mongo
+    networks:
+      - back-tier
+      - front-tier
+  front:
+    build: ./front
+    image: front
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - front-tier
+    ports:
+      - "8080:8080"
+  mongo:
+    container_name: mongo
+    image: "mongo"
+    #command: --auth
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - back-tier
+    volumes:
+      - db-data:/var/lib/mongodb_timemanager/data
+
+networks:
+  back-tier:
+  front-tier:
+
+volumes:
+  db-data:
