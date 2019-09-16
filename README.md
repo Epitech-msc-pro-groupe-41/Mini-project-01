@@ -20,7 +20,7 @@ In this link you have access to the web app : http://localhost:8080
 
 Part 1 :
 To launch the api, web app and db in docker open a shell and follow this commands:
-- docker-compose up -d
+- docker-compose build && docker-compose up
 
 In this link you have access to the web app in docker : http://localhost:8080
 In this link you have access to the swagger of the api in docker : http://localhost:4000/api/swagger-ui.html#/
